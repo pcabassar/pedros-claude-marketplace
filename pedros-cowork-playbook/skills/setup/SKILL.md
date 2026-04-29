@@ -1,7 +1,6 @@
 ---
 name: setup
-description: Bootstrap or migrate a Claude Cowork workspace to follow Pedro's Cowork Playbook. Detects empty, partial, or established state and produces paste-ready content for Personal Preferences, Cowork Instructions, Project Instructions, plus workspace files (CLAUDE.md, memory/). Use when the user wants to set up Cowork from scratch, migrate an existing Claude Cowork setup into the playbook framework, or audit and repair a workspace that drifted from the framework. Triggers on phrases like — set up my workspace, bootstrap Cowork, migrate to the playbook, configure my Projects, I followed the playbook but something is off.
-disable-model-invocation: true
+description: Bootstrap or migrate a Claude Cowork workspace to follow Pedro's Cowork Playbook. Detects empty, partial, or established state and produces paste-ready content for Personal Preferences, Cowork Instructions, Project Instructions, plus workspace files (CLAUDE.md, memory/). Use when the user wants to set up Cowork from scratch, migrate an existing Claude Cowork setup into the playbook framework, or audit and repair a workspace that drifted from the framework. Triggers on phrases like set up my workspace, bootstrap Cowork, migrate to the playbook, configure my Projects, or I followed the playbook but something is off.
 ---
 
 # Setup
