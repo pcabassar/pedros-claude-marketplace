@@ -1,6 +1,5 @@
 {
   "name": "pedros-cowork-playbook",
-  "version": "0.1.0",
   "description": "A framework and skills for getting Claude Cowork to operate coherently across sessions and Cowork Projects. Partitions instruction surfaces and memory layers so context stays sharp without re-explanation.",
   "author": {
     "name": "Pedro J. Cabassa",
