@@ -1,0 +1,14 @@
+{
+  "name": "pedros-claude-marketplace",
+  "owner": {
+    "name": "Pedro J. Cabassa"
+  },
+  "description": "Pedro's plugins for Claude Cowork and Claude Code. Frameworks, skills, and scaffolding for getting more out of agentic Claude.",
+  "plugins": [
+    {
+      "name": "pedros-cowork-playbook",
+      "source": "./pedros-cowork-playbook",
+      "description": "A framework and skills for getting Claude Cowork to operate coherently across sessions and Cowork Projects. Partitions instruction surfaces and memory layers so context stays sharp without re-explanation."
+    }
+  ]
+}

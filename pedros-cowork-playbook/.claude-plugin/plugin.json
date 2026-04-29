@@ -1,0 +1,25 @@
+{
+  "name": "pedros-cowork-playbook",
+  "version": "0.1.0",
+  "description": "A framework and skills for getting Claude Cowork to operate coherently across sessions and Cowork Projects. Partitions instruction surfaces and memory layers so context stays sharp without re-explanation.",
+  "author": {
+    "name": "Pedro J. Cabassa",
+    "url": "https://github.com/pcabassar"
+  },
+  "homepage": "https://github.com/pcabassar/pedros-claude-marketplace/tree/main/pedros-cowork-playbook",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pcabassar/pedros-claude-marketplace"
+  },
+  "license": "MIT",
+  "keywords": [
+    "cowork",
+    "claude-cowork",
+    "claude-code",
+    "memory",
+    "workspace",
+    "framework",
+    "playbook",
+    "productivity"
+  ]
+}
