@@ -83,6 +83,18 @@ Stage what you've found and what you propose. Get user approval before any file 
 
    The workspace-root attach is silent-fail (playbook §3 Known issues). Cowork won't warn if it's missed; sessions just operate without cross-Project memory. If you find an existing Project missing the attach, recommend recreation — there's no fix in place.
 
+5. **Offer to schedule the weekly refresh** (Tier II adoption only). Don't assume the user wants this — explain and ask first:
+
+   *Cross-Project memory drifts as you work — new people show up, projects shift status, terms enter and leave use. The playbook recommends a weekly scheduled task that runs the refresh-workspace skill so memory stays current without you having to remember. The task fires weekly, generates a proposal, and waits for your approval next time you open Cowork. Want me to walk you through setting it up?*
+
+   If yes:
+   1. Open Cowork's Scheduled tasks UI.
+   2. Create a new task with cadence set to weekly (Sunday evening or Friday morning are good defaults).
+   3. Prompt: *Run the refresh-workspace skill.*
+   4. Save.
+
+   If no, note in the final review that they declined; they can run `/refresh-workspace` manually whenever they sense drift, or schedule it later.
+
 ### 4. Final review and capture
 
 After file writes are applied and the user has handled UI-only items:
