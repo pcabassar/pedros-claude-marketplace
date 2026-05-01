@@ -18,13 +18,12 @@ Operators — sales, ops, founders, advisors — who use Claude Cowork (or are a
 
 - **Plugin.** Bundles every template, prompt, and skill referenced below. Install: [github.com/pcabassar/pedros-claude-marketplace](https://github.com/pcabassar/pedros-claude-marketplace).
 - **Overview.** One-page visual summary, designed for sharing.
-- **Slide.** Single-image stack of the four tiers.
 
 ## How to use this with the plugin
 
 The plugin includes two skills:
 
-- **`setup`** — bootstraps a fresh workspace into the system, or migrates an existing setup into it.
+- **`setup`** — helps you bootstrap a fresh workspace into the system, or migrate an existing setup into it.
 - **`refresh-workspace`** — keeps cross-Project memory current. Diffs your workspace against recent activity and proposes promotions, demotions, and stale flags.
 
 Invocation differs by environment:
