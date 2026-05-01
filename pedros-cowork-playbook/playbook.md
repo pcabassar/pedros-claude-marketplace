@@ -64,6 +64,23 @@ This playbook addresses the first three directly. A future companion will cover 
 
 ## 2. The Tiers
 
+What the full system looks like on disk:
+
+```
+~/claude-workspace/                # workspace root (Tier II)
+├── CLAUDE.md                      # cross-Project hot cache (Tier II)
+├── memory/                        # cross-Project full storage (Tier II)
+│   ├── glossary.md
+│   └── voice-and-style.md
+├── project-1/                     # one project (Tier I)
+│   ├── reference/                 # stable context (Tier III)
+│   ├── working/                   # drafts, scratch (Tier III)
+│   ├── deliverables/              # finished outputs (Tier III)
+│   └── archived/                  # stale items, optional (Tier III)
+├── project-2/
+└── ...
+```
+
 ### Tier 0 — Prerequisites
 
 Cowork installed. The Cowork OS plugin installed. Connectors enabled to taste. Max (20x) subscription recommended for Tier IV.
