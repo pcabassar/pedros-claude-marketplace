@@ -16,9 +16,9 @@ Operators — sales, ops, founders, advisors — who use Claude Cowork (or are a
 
 ## Companion artifacts
 
-- **The plugin.** Bundles every template, prompt, and skill referenced below. Install: [github.com/pcabassar/pedros-claude-marketplace](https://github.com/pcabassar/pedros-claude-marketplace).
-- **The overview.** One-page visual summary, designed for sharing.
-- **The slide.** Single-image stack of the four tiers.
+- **Plugin.** Bundles every template, prompt, and skill referenced below. Install: [github.com/pcabassar/pedros-claude-marketplace](https://github.com/pcabassar/pedros-claude-marketplace).
+- **Overview.** One-page visual summary, designed for sharing.
+- **Slide.** Single-image stack of the four tiers.
 
 ## How to use this with the plugin
 
@@ -53,11 +53,11 @@ The Cowork features this system builds on:
 | **Scheduled tasks** | Background automation that runs on a cadence — daily, weekly, custom. |
 | **Artifacts** | Persistent rendered HTML pages that re-fetch data from connectors when reopened. |
 
-What Cowork doesn't do well today (April 2026):
+What Cowork doesn't do well today (May 2026):
 
 - **No native cross-Project memory.** Project Memory is hard-isolated per Cowork Project. Cross-Project context needs the workspace-folder pattern this playbook describes.
 - **Instruction channel ambiguity.** Four places where guidance can live (Personal Preferences, Cowork Instructions, Project Instructions, `CLAUDE.md` files) can each hold either kind of content. Without a partition rule, content drifts.
-- **Cowork Instructions revert bug.** A known issue where Cowork Instructions can silently revert. Workaround in § 3.
+- **Cowork Instructions revert bug.** A known issue where Cowork Instructions can silently revert. Workaround in § 3 (Known issues).
 - **No native shared collaboration.** Cowork sessions are single-user. Sharing work products with a team needs external infrastructure (GitHub, hosted dashboards, cloud drive).
 - **Operating cost.** Always-on connectors plus weekly scheduled tasks plus daily briefings burn message limits. Max (20x) recommended; works on Pro.
 
@@ -73,7 +73,12 @@ Cowork installed. The Cowork OS plugin installed. Connectors enabled to taste. M
 
 *Smart, consistent sessions for every Cowork Project.*
 
-**Components:** Personal Preferences (how Claude talks to you) **+** Cowork Instructions (how Claude operates across all your work) **+** Project Instructions (mission and persona for one project) **+** Project Memory (per-Project, automatic — no setup).
+**Components:**
+
+- **Personal Preferences** — how Claude talks to you.
+- **Cowork Instructions** — how Claude operates across all your work.
+- **Project Instructions** — mission and persona for one project.
+- **Project Memory** — per-Project, automatic, no setup.
 
 **What you do:**
 
@@ -85,7 +90,7 @@ Cowork installed. The Cowork OS plugin installed. Connectors enabled to taste. M
    - **Project Instructions** (Cowork → Project → Instructions) — mission and persona for one Cowork Project. Loads only in that Project's sessions. Template: Appendix A.3.
 4. Project Memory writes itself as you work — nothing to set up.
 
-The four channels are MECE: each holds a different kind of content; nothing overlaps.
+The four channels are MECE: each holds a different kind of content; nothing overlaps. Once they're filled, Claude auto-loads all of them at the start of every session — including the workspace `CLAUDE.md` from Tier II if it exists. You don't manage loading.
 
 **Three patterns worth keeping in your Cowork Instructions** (full template in A.2):
 
@@ -97,7 +102,12 @@ The four channels are MECE: each holds a different kind of content; nothing over
 
 *Context that carries across projects and time.*
 
-**Components:** Workspace folder (parent attached to every Cowork Project) **+** Workspace `CLAUDE.md` (people, projects, glossary pointers, voice — shared everywhere) **+** Memory files (`glossary.md` + `voice-and-style.md`) **+** `/refresh-workspace` (keeps memory current).
+**Components:**
+
+- **Workspace folder** — parent folder attached to every Cowork Project.
+- **Workspace `CLAUDE.md`** — people, projects, glossary pointers, voice. Shared everywhere.
+- **Memory files** — `memory/glossary.md` (terms, nicknames, codenames) and `memory/voice-and-style.md` (how you write and speak).
+- **`/refresh-workspace`** — keeps memory current as your work shifts.
 
 **What you do:**
 
@@ -117,7 +127,9 @@ The four channels are MECE: each holds a different kind of content; nothing over
 
 *Files stay organized as you work.*
 
-**Component:** File-and-folder conventions (how Claude names files, sorts folders, archives the stale).
+**Component:**
+
+- **File-and-folder conventions** — names files, sorts folders, archives the stale.
 
 **What you do:**
 
@@ -141,29 +153,35 @@ Modules — install only what you need. Each runs as a scheduled task or a manua
 - **Inbound digests.** Scheduled tasks summarizing newsletters, Slack channels, RSS feeds. Keeps you current without drowning in inputs.
 - **Custom scheduled tasks.** Pattern for adding your own — anything recurring you'd rather not do by hand.
 
-⚠ **Footgun.** Scheduled tasks read everything they can see at fire time. A daily briefing that pulls from email reads every email each morning. Audit before leaving on autopilot. PHI / NDA / regulated content needs explicit do-not-connect handling — see § 4.
+## 3. Known issues
 
-## 3. Footguns
+Three Cowork issues with workarounds:
 
-Three known issues with workarounds:
-
-- **Cowork Instructions revert bug.** Cowork Instructions can silently revert to a stale version when a prior session writes to the underlying config with an outdated in-memory snapshot. Workaround: pin one long-running session that holds your Cowork Instructions in context as the source of truth. Restore from that session when revert happens. Tracked in [issue #40175](https://github.com/anthropics/claude-code/issues/40175) and [#40731](https://github.com/anthropics/claude-code/issues/40731).
+- **Cowork Instructions revert bug.** Cowork Instructions can silently revert to a stale version when a prior session writes to the underlying config with an outdated in-memory snapshot. Workaround: pin one long-running session that holds your Cowork Instructions in context as the source of truth. Restore from that session when revert happens. Anthropic is aware. Tracked in [issue #40175](https://github.com/anthropics/claude-code/issues/40175) and [#40731](https://github.com/anthropics/claude-code/issues/40731).
 - **Silent-fail folder attach.** When creating a Cowork Project, you must attach BOTH the project folder AND the workspace root. Cowork won't warn if you skip the workspace root — sessions just operate without cross-Project memory. Folders can only be attached at Project creation. Fix: recreate the Cowork Project.
 - **Operating cost.** Connectors + scheduled tasks + daily briefings burn message limits fast. Max (20x) recommended; works on Pro.
 
 ## 4. Security and threat model
 
-Connectors give Claude a wide read perimeter. The same surface that makes the system useful exposes it to whatever an adversary can plant in those streams. This section surfaces the concern; it doesn't claim authority.
+Connectors give Claude a wide read perimeter, and attached folders give Claude write and delete access. The same surfaces that make the system useful expose it to whatever an adversary can plant in those streams, and to mistakes you make about what you've handed over. This section surfaces the concerns; it doesn't claim authority.
 
 *I'm not a security expert. For authoritative guidance, see the [OWASP Top 10 for LLM Applications](https://owasp.org/www-project-top-10-for-large-language-model-applications/) and Anthropic's [responsible use guidance](https://docs.claude.com/en/docs/test-and-evaluate/strengthen-guardrails/reduce-prompt-injection-attacks). For Cowork-specific data handling, check Anthropic's terms before connecting regulated data.*
 
-### 4.1 Threats
+### 4.1 What Cowork can do with attached folders
 
-1. **Indirect prompt injection** through email, chat, calendar, or document content Claude ingests. Highest-likelihood threat as of April 2026.
+Cowork has full read, write, and delete access to any folder you attach to a Cowork Project — including all subfolders, recursively. Be deliberate:
+
+- Use the workspace + project structure described in § 2. It scopes Cowork's reach to the folders you intend.
+- Don't attach broad parent folders like `~/Documents/`. You'd give Cowork access to everything beneath — finances, downloads, anything you've forgotten about.
+- If you must attach a sensitive folder for a specific use, scope tightly. Create a dedicated subfolder, attach only that, never the parent.
+
+### 4.2 Threats
+
+1. **Indirect prompt injection** through email, chat, calendar, or document content Claude ingests. Highest-likelihood threat as of May 2026.
 2. **Sensitive data exposure.** Anything Claude reads goes through Anthropic's models. Verify alignment with your data-handling obligations before connecting regulated sources.
 3. **Audit gap.** Cowork sessions may not appear in standard enterprise audit trails. Verify before adopting at scale.
 
-### 4.2 Do-not-connect
+### 4.3 Do-not-connect
 
 Folders to never attach to a Cowork Project:
 
@@ -179,12 +197,18 @@ Connectors to scope narrowly or skip entirely:
 - Chat workspaces with vendor-confidential discussions
 - Drives containing customer data subject to processing agreements
 
-### 4.3 Practices that reduce risk
+### 4.4 Practices that reduce risk
 
 - **Per-action approval for external writes.** Never grant Claude blanket write permission to external connectors. Approve each send, post, schedule individually.
 - **Audit scheduled tasks.** A daily briefing that pulls from email reads every email each morning. Verify nothing in your inbox is meant to stay confidential.
 - **Don't take "read everywhere" literally** if you handle regulated data. Broad ≠ all.
 - **Treat Project Memory's PII rules as advisory.** The system-prompt rules ask Claude not to save sensitive PII; there's no server-side filter. The model's judgment is the only safeguard.
+
+### 4.5 Open issues to watch
+
+- Indirect prompt injection mitigations — Anthropic is actively working on this; assume it's not solved.
+- Audit log coverage for Cowork sessions.
+- Per-connector scope controls (UI may improve).
 
 This playbook does not solve security — it surfaces the surface. Pair adoption with your organization's data-handling policies.
 
@@ -306,7 +330,7 @@ When a folder gets crowded, suggest moving stale items to `archived/` before pur
 
 ### Naming
 
-Lowercase kebab-case. Date stamps where relevant: `playbook-2026-04-28.md`. Be specific enough to identify the file without opening it.
+Lowercase kebab-case. Date stamps where relevant: `playbook-2026-05-01.md`. Be specific enough to identify the file without opening it.
 
 ---
 
@@ -410,7 +434,7 @@ People and project indexes live in workspace `CLAUDE.md` (short descriptors). Pe
 
 ## Appendix B — Project Memory mechanics
 
-For the curious. Anthropic actively iterates on this layer; details below are accurate as of 2026-04-28.
+For the curious. Anthropic actively iterates on this layer; details below are accurate as of 2026-05-01.
 
 ### Storage
 
@@ -468,3 +492,10 @@ Project Memory mechanics — Anthropic publishes high-level docs but the deep me
 - [claudefa.st — Auto Memory mechanics](https://claudefa.st/blog/guide/mechanics/auto-memory)
 - [claudefa.st — Auto Dream consolidation](https://claudefa.st/blog/guide/mechanics/auto-dream)
 - [Milvus blog — Claude Code memory and memsearch](https://milvus.io/blog/claude-code-memory-memsearch.md)
+
+Independent Cowork guides consulted during research. None treats the full instruction-channel set as a partitioned system:
+
+- Ruben Hassid — uses Global Instructions as a dispatcher pointing to ABOUT ME / TEMPLATES / PROJECTS folders.
+- Alex Banks — layers Project Instructions over Global + Context files.
+- Jeff Su — treats channels as separate features.
+- Karo Zieminski — focuses on plugin/skill/sub-agent tactics.
