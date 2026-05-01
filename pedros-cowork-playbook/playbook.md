@@ -1,277 +1,169 @@
-# Pedro's Claude Cowork Playbook
+# Pedro's Cowork OS
 
-> **Status note (2026-04-29):** Draft v4 restructured around Basic Setup. Sections 1–6 + Appendices A–D + References drafted.
+Make better decisions, faster. Stop re-explaining yourself. Get hours back every week. This system turns Claude Cowork from a chat window into infrastructure — Claude as your domain expert, context that compounds across Projects, routine work running on its own.
 
-## About this playbook
+A modular system in tiers. Each tier solves one problem and stands alone. Adopt the tier that fits your need; stop where the cost stops being worth it.
 
-Claude Cowork is easy to start using. Getting its full potential takes a bit of thought.
+- **Tier 0 — Prerequisites.** Cowork installed, plugin installed, connectors enabled.
+- **Tier I — Instructions Setup (foundation).** Smart, consistent sessions for every Cowork Project.
+- **Tier II — Cross-Project Memory.** Context that carries across projects and time.
+- **Tier III — Organization.** Files stay organized as you work.
+- **Tier IV — Automation.** Recurring leverage on cadence.
 
-The infrastructure is powerful — persistent file access, connector-driven context from your external tools, memory that carries across sessions, skills and plugins that compose. Used well, every session compounds: each one starts with more context than the last. Used carelessly, instructions drift across surfaces, memory bloats, and you end up re-explaining who people are every Monday.
+## Who this is for
 
-This playbook is the technique. A six-channel partition that keeps Cowork coherent without re-explanation.
+Operators — sales, ops, founders, advisors — who use Claude Cowork (or are about to) and want a stable operating layer underneath their work. If you've outgrown ad-hoc setups and want a system that compounds rather than drifts, this is for you.
 
-**Don't be put off by the length.** The bulk is explanation and templates, not steps. With the templates in Appendix A and the `/pedros-cowork-playbook:setup` skill, getting up and running takes 30–60 minutes — most of which is copy-paste-adapt rather than original writing.
+## Companion artifacts
 
-> **A note on skill names.** Plugin skills in Claude Code and Cowork are namespaced by the plugin name. Throughout this playbook, the setup skill is referenced as `/pedros-cowork-playbook:setup` and the refresh skill as `/pedros-cowork-playbook:refresh-workspace`. That's what you'll type after installing the plugin.
+- **The plugin.** Bundles every template, prompt, and skill referenced below. Install: [github.com/pcabassar/pedros-claude-marketplace](https://github.com/pcabassar/pedros-claude-marketplace).
+- **The overview.** One-page visual summary, designed for sharing.
+- **The slide.** Single-image stack of the four tiers.
 
-## 1. About Claude Cowork
+## How to use this with the plugin
 
-### 1.1 Summary
+The plugin includes two skills:
 
-Claude Cowork is Anthropic's agentic desktop application — a workspace where you delegate knowledge work to Claude, with persistent file access, connector-driven context from your external tools, and memory that carries across sessions.
+- **`setup`** — bootstraps a fresh workspace into the system, or migrates an existing setup into it.
+- **`refresh-workspace`** — keeps cross-Project memory current. Diffs your workspace against recent activity and proposes promotions, demotions, and stale flags.
 
-### 1.2 Key features
+Invocation differs by environment:
 
-These are the Cowork features this playbook builds on.
+- **Cowork:** invoke via natural language. *"Set up my workspace per the playbook." "Run the refresh-workspace skill."* Claude picks the right skill based on context.
+- **Claude Code:** invoke via slash command. `/pedros-cowork-playbook:setup`, `/pedros-cowork-playbook:refresh-workspace`.
+
+The same applies to Anthropic's `/consolidate-memory` skill (used for cleaning up a Cowork Project's auto-memory): slash command in Claude Code, natural language in Cowork.
+
+## Terminology
+
+- **project** (lowercase) — your workstream. A focus area that earns its own folder. Bigger than a task, smaller than your whole life. Could be ongoing (your finances, a client engagement) or time-bound (a launch, a fundraise).
+- **Cowork Project** (capital P) — Cowork's UI organizational unit. Has folders attached, instructions, isolated memory. Each of your projects gets one.
+
+## 1. Cowork in a page
+
+The Cowork features this system builds on:
 
 | Feature | What it does |
 |---|---|
-| **Cowork Projects** | UI organizational unit. Each Project has a folder (or set of folders), instructions, and an isolated memory space. Foundation for everything else in this playbook. |
-| **Project Memory** *(Anthropic sometimes calls this "Auto Memory")* | Per-Cowork-Project autonomous memory layer. Claude writes durable observations to typed markdown files (`user_*`, `feedback_*`, `project_*`, `reference_*`) indexed by `MEMORY.md`. Loaded into every session in that Cowork Project. |
+| **Cowork Projects** | UI organizational unit. Each Project has folders attached, instructions, and an isolated memory space. Foundation for everything else. |
+| **Project Memory** | Per-Cowork-Project autonomous memory layer. Claude writes durable observations to typed markdown files indexed by `MEMORY.md`. Loaded into every session in that Cowork Project. (Anthropic's term for the underlying mechanism is "Auto Memory.") |
 | **Connectors** | Read perimeter to external tools — email, calendar, chat, drive, docs, project trackers. Each enabled connector lets Claude see (and sometimes write to) that tool. |
-| **Skills** | Specialized capability bundles invoked on demand or by description match. A skill is a goal-oriented prompt that runs in-session when relevant. |
-| **Plugins** | Bundles of skills, MCP servers, and reference content. Installable from a marketplace or a local source. |
-| **Scheduled tasks** | Background automation that runs on a cadence — daily, weekly, custom. Produces reports, refreshes data, sends digests. |
-| **Artifacts** | Persistent rendered HTML pages that re-fetch data from connectors when reopened. Useful for trackers, dashboards, recurring views. |
+| **Skills** | Goal-oriented capability bundles invoked on demand or by description match. |
+| **Plugins** | Bundles of skills, MCP servers, and reference content. Installable from a marketplace or local source. |
+| **Scheduled tasks** | Background automation that runs on a cadence — daily, weekly, custom. |
+| **Artifacts** | Persistent rendered HTML pages that re-fetch data from connectors when reopened. |
 
-### 1.3 Current limitations
+What Cowork doesn't do well today (April 2026):
 
-What Cowork doesn't do well today (as of April 2026):
+- **No native cross-Project memory.** Project Memory is hard-isolated per Cowork Project. Cross-Project context needs the workspace-folder pattern this playbook describes.
+- **Instruction channel ambiguity.** Four places where guidance can live (Personal Preferences, Cowork Instructions, Project Instructions, `CLAUDE.md` files) can each hold either kind of content. Without a partition rule, content drifts.
+- **Cowork Instructions revert bug.** A known issue where Cowork Instructions can silently revert. Workaround in § 3.
+- **No native shared collaboration.** Cowork sessions are single-user. Sharing work products with a team needs external infrastructure (GitHub, hosted dashboards, cloud drive).
+- **Operating cost.** Always-on connectors plus weekly scheduled tasks plus daily briefings burn message limits. Max (20x) recommended; works on Pro.
 
-- **No native cross-Project memory.** Project Memory is hard-isolated per Cowork Project. Cross-Project context requires the workspace-folder pattern this playbook describes.
-- **Instruction channel ambiguity.** Four places where guidance and context can live (Personal Preferences, Cowork Instructions, Project Instructions, `CLAUDE.md` files) can each hold either kind of content. Without a partition rule, content drifts across surfaces and contradicts itself.
-- **Cowork Instructions revert bug.** A known issue where Cowork Instructions can silently revert when a prior session writes to the underlying config. See § 5 for the workaround.
-- **No native shared collaboration.** Cowork sessions are single-user. Sharing work products with a team requires external infrastructure (GitHub, hosted dashboards, cloud drive).
-- **Operating cost.** Always-on connectors plus weekly scheduled tasks plus daily briefings burn message limits fast. We recommend the Max (20x) subscription, but it will also work with Pro.
+This playbook addresses the first three directly. A future companion will cover the sharing limitation.
 
-This playbook addresses the first three directly. A future companion will cover working around the sharing limitation.
+## 2. The Tiers
 
-## 2. Basic Setup
+### Tier 0 — Prerequisites
 
-The `/pedros-cowork-playbook:setup` skill walks you toward this folder structure:
+Cowork installed. The Cowork OS plugin installed. Connectors enabled to taste. Max (20x) subscription recommended for Tier IV.
 
-```
-~/claude-workspace/                # workspace folder (root)
-├── CLAUDE.md                      # cross-Project memory hot cache
-├── memory/                        # cross-Project memory full storage
-│   ├── glossary.md                # terms, nicknames, codenames
-│   └── voice-and-style.md         # how you write and speak
-├── project-1/                     # one project — direct subfolder
-│   ├── reference/
-│   ├── working/
-│   └── deliverables/
-├── project-2/
-└── ...
-```
+### Tier I — Instructions Setup (foundation)
 
-### 2.1 Folders and Projects
+*Smart, consistent sessions for every Cowork Project.*
 
-> **A note on terminology.** From here on, **project** (lowercase) refers to your workstream — a focus area that earns its own folder. Could be ongoing (your finances, your career) or time-bound (a client engagement, a launch). Bigger than a task, smaller than your whole life. **Cowork Project** (capital P) refers to Cowork's UI organizational feature.
+**Components:** Personal Preferences (how Claude talks to you) **+** Cowork Instructions (how Claude operates across all your work) **+** Project Instructions (mission and persona for one project) **+** Project Memory (per-Project, automatic — no setup).
 
-Each item below is required.
+**What you do:**
 
-#### 2.1.1 Workspace folder
+1. One folder per project (anywhere on disk). *Cowork has full read/write/delete on attached folders — pick deliberately.*
+2. One Cowork Project per project, attached to that folder.
+3. Fill three instruction surfaces:
+   - **Personal Preferences** (Claude.ai → Settings) — how you want Claude to communicate with you. Tone, format, push-back rules. Loads into every session, every Cowork Project. Template: Appendix A.1.
+   - **Cowork Instructions** (Cowork → Settings) — Claude's operating posture across all your work. Loads into every session. Template: Appendix A.2.
+   - **Project Instructions** (Cowork → Project → Instructions) — mission and persona for one Cowork Project. Loads only in that Project's sessions. Template: Appendix A.3.
+4. Project Memory writes itself as you work — nothing to set up.
 
-Your workspace folder (e.g., `~/claude-workspace/`) serves as the root for all your projects and the place where cross-Project memory lives.
+The four channels are MECE: each holds a different kind of content; nothing overlaps.
 
-#### 2.1.2 Project subfolders
+**Three patterns worth keeping in your Cowork Instructions** (full template in A.2):
 
-Every project lives in a subfolder of the workspace folder.
+- **Close-the-gap.** *"Operate as a subject-matter expert. When not one, close the gap immediately through research."* Prevents confident-but-shallow work.
+- **Goal-oriented prompts.** *"State the outcome; let the agent figure out tooling and sequencing."* Why every skill in this plugin is described by its goal, not its procedure.
+- **Don't-reinvent.** *"Use Cowork's features aggressively. Don't reinvent what a skill already handles."* Why this playbook uses Anthropic's `/consolidate-memory` directly rather than wrapping it.
 
-#### 2.1.3 Move existing folders
+### Tier II — Cross-Project Memory
 
-If your existing project folders live elsewhere on disk, move them under the workspace folder. *(Cross-Project memory only works when they're co-located.)*
+*Context that carries across projects and time.*
 
-#### 2.1.4 Cowork Projects
+**Components:** Workspace folder (parent attached to every Cowork Project) **+** Workspace `CLAUDE.md` (people, projects, glossary pointers, voice — shared everywhere) **+** Memory files (`glossary.md` + `voice-and-style.md`) **+** `/refresh-workspace` (keeps memory current).
 
-Each project has a matching Cowork Project. **You must:** create a Cowork Project for each, and connect it to **both** the project subfolder and the workspace folder.
+**What you do:**
 
-> The workspace-folder attach is silent-failure: skip it and cross-Project memory doesn't load, but Cowork won't warn you. Sessions run; they just operate without context you assume is there. *Folders can only be attached at Cowork Project creation* — you can't add the workspace folder retroactively.
+1. Create a workspace root folder (e.g., `~/claude-workspace/`). Move your project folders under it. *Cross-Project memory only works when project folders are co-located.*
+2. Attach the workspace root to **each** Cowork Project at creation, alongside the project folder. ⚠ *Silent fail: Cowork won't warn if you skip this. Folders can only be attached at Cowork Project creation — no retroactive add. If you find a Cowork Project missing the attach, recreate it.*
+3. Fill the workspace memory files:
+   - **`CLAUDE.md`** at the workspace root — hot cache for cross-project context (people, projects, terms, voice pointers). Target ~50–100 lines. Template: Appendix A.4.
+   - **`memory/glossary.md`** — terms, nicknames, codenames you use across projects.
+   - **`memory/voice-and-style.md`** — how you write and speak.
+4. Schedule `/refresh-workspace` weekly. The skill diffs your cross-Project memory against recent activity (file changes, connector signals) and proposes promotions, demotions, and stale flags. Always proposes; never auto-applies.
 
-### 2.2 Instructions Setup
+**Why so small.** People and project indexes live in workspace `CLAUDE.md` (short descriptors). Per-project rich detail lives in each project's folder. The workspace `memory/` holds only what's genuinely cross-cutting AND worth manually curating: shared language, shared voice.
 
-Four places hold instructions, complementary not duplicative (MECE). We recommend using the templates in Appendix A as starting points — they are real working examples, evolved through use.
+**What NOT to put here.** Anything specific to one project goes in that project's folder, not workspace `memory/`. Use `reference/` for stable content (positioning, personas, guides), `working/` for drafts, `deliverables/` for finished outputs, and `archived/` (optional) for stale items worth keeping out of sight.
 
-#### 2.2.1 Personal Preferences
+### Tier III — Organization
 
-**Lives in:** Claude.ai → Settings → Personal Preferences.
+*Files stay organized as you work.*
 
-**Holds:** how you want Claude to communicate with you. Tone, format, length, when to push back, when to ask. Applies to every Cowork session and every Cowork Project.
+**Component:** File-and-folder conventions (how Claude names files, sorts folders, archives the stale).
 
-**What to put here:** communication style, format preferences, push-back rules, boundaries on questions.
+**What you do:**
 
-**What NOT to put here:** project-specific rules, identity context, anything tied to a single project.
+Add the file-and-folder conventions block (Appendix A.2 § File Conventions) to your Cowork Instructions. It tells Claude:
 
-**Template:** see Appendix A.1.
+- How to name files: lowercase kebab-case, dated where useful, descriptive enough to identify without opening (e.g., `gtm-plan-2026-04-14.md`).
+- Where to put them per project: `reference/` (stable), `working/` (drafts), `deliverables/` (finished), `archived/` (optional, for stale items worth keeping).
+- To use YAML frontmatter on working files (title, purpose, status, dates).
+- To suggest archiving when folders get crowded.
 
-#### 2.2.2 Cowork Instructions
+Adapt the suggested folder shape to your work — these are conventions, not rules. Add subfolders within `reference/` (e.g., `reference/people/`, `reference/products/`) where it helps.
 
-**Lives in:** Cowork → Settings → Instructions.
+### Tier IV — Automation
 
-**Holds:** cross-project operating rules and Claude's overall posture in your Cowork environment. Loads with every session, regardless of which Cowork Project you're in.
+*Recurring leverage. Pick what fits.*
 
-**What to put here:**
-- Claude's overall posture across all your work
-- The folder + Cowork Project setup pattern (so Claude knows where to find things)
-- Workspace conventions that apply across all Cowork Projects
-- Operating rules that don't fit Personal Preferences
+Modules — install only what you need. Each runs as a scheduled task or a manual skill invocation:
 
-**What NOT to put here:** project-specific persona (Project Instructions), detailed identity context (workspace `CLAUDE.md`).
+- **Task system.** `TASKS.md` at workspace root with project-coded entries (e.g., `BO3`, `MC1`), status sections (Backlog / Up Next / In Progress / Waiting On / Done), Friday archive cadence to `DONE-LOG.md`.
+- **Daily briefing.** Scheduled task pulling from Calendar, Email, and `TASKS.md` — produces a prioritized morning briefing covering meetings, action items, and the one thing that matters most.
+- **Inbound digests.** Scheduled tasks summarizing newsletters, Slack channels, RSS feeds. Keeps you current without drowning in inputs.
+- **Custom scheduled tasks.** Pattern for adding your own — anything recurring you'd rather not do by hand.
 
-**Patterns worth borrowing** from working examples (full set in Appendix A.2):
+⚠ **Footgun.** Scheduled tasks read everything they can see at fire time. A daily briefing that pulls from email reads every email each morning. Audit before leaving on autopilot. PHI / NDA / regulated content needs explicit do-not-connect handling — see § 4.
 
-- **Close-the-gap pattern.** *"Operate as a subject-matter expert. When not one, close the gap immediately through research."* Prevents Claude from producing confident-but-shallow work when it's outside its expertise.
-- **Goal-oriented prompt pattern.** *"When drafting prompts for other agents, be goal-oriented, not prescriptive. State the outcome; let the agent figure out tooling and sequencing."* Why every skill in this playbook is described by its goal rather than its procedure.
-- **Don't-reinvent pattern.** *"Use Cowork's features aggressively — Skills, Plugins, scheduled tasks, connectors. Don't reinvent what a skill already handles."* Why this playbook uses Anthropic's `/consolidate-memory` directly rather than wrapping it in a custom skill.
+## 3. Footguns
 
-**Note:** Cowork Instructions are subject to a known revert bug — see § 5.
+Three known issues with workarounds:
 
-**Template:** see Appendix A.2.
+- **Cowork Instructions revert bug.** Cowork Instructions can silently revert to a stale version when a prior session writes to the underlying config with an outdated in-memory snapshot. Workaround: pin one long-running session that holds your Cowork Instructions in context as the source of truth. Restore from that session when revert happens. Tracked in [issue #40175](https://github.com/anthropics/claude-code/issues/40175) and [#40731](https://github.com/anthropics/claude-code/issues/40731).
+- **Silent-fail folder attach.** When creating a Cowork Project, you must attach BOTH the project folder AND the workspace root. Cowork won't warn if you skip the workspace root — sessions just operate without cross-Project memory. Folders can only be attached at Project creation. Fix: recreate the Cowork Project.
+- **Operating cost.** Connectors + scheduled tasks + daily briefings burn message limits fast. Max (20x) recommended; works on Pro.
 
-#### 2.2.3 Project Instructions
+## 4. Security and threat model
 
-**Lives in:** Cowork → Project → Instructions.
-
-**Holds:** the mission and persona for one specific Cowork Project. What's this Project for, who's Claude in it, what rules apply only here.
-
-**What to put here:**
-- Project mission (one paragraph)
-- Project-specific persona ("operate as my GTM strategist")
-- Project-specific operating rules
-- Skills and tools to prefer or avoid in this Cowork Project
-
-**What NOT to put here:** cross-project content, hot cache (people / terms / projects — those go in workspace `CLAUDE.md`).
-
-**Template:** see Appendix A.3.
-
-### 2.3 Cross-Project Memory
-
-Optional, but required for cross-Project memory to run.
-
-#### 2.3.1 Workspace CLAUDE.md
-
-**Where to create and edit:** `~/claude-workspace/CLAUDE.md`.
-
-**Holds:** cross-Project hot cache. Your personal context, your organization, your team, the people and projects and terms you reach for most often. Loads with every Cowork Project session that has the workspace folder attached.
-
-**Format:** tables for compactness. Target ~50–100 lines.
-
-**What to put here:**
-- Your personal context, your organization, your direct team
-- Top ~15 people beyond the team
-- Active projects table (code → name → folder URL → status → description)
-- Top ~15 terms and acronyms
-- Pointers to `memory/glossary.md` and `memory/voice-and-style.md` for fuller cross-cutting language and voice
-
-**What NOT to put here:** project-specific hot cache (Project Instructions); per-project rich detail (Project Memory handles that); an umbrella `# Memory` header (collides with Project Memory's `MEMORY.md` and confuses the reader).
-
-**Template:** see Appendix A.4.
-
-#### 2.3.2 Workspace memory/
-
-**Where to create and edit:** `~/claude-workspace/memory/glossary.md` and `~/claude-workspace/memory/voice-and-style.md`.
-
-**Holds:** cross-Project full storage — kept deliberately small. Two files only:
-
-- `glossary.md` — terms, nicknames, codenames you use across projects
-- `voice-and-style.md` — how you write and speak
-
-**Why so small:** people and project indexes live in workspace `CLAUDE.md` (short descriptors); per-project rich detail lives in each Cowork Project's Project Memory. The `memory/` folder holds only what's genuinely cross-cutting *and* worth user-curating manually: shared language and shared voice.
-
-**What NOT to put here:** per-person profiles (Project Memory + connectors handle this); per-project deep-dives; project-specific reference material (project folder's `reference/`).
-
-#### 2.3.3 Workspace memory refresh task
-
-Set up a recurring task to clean up your workspace `CLAUDE.md`, `memory/glossary.md`, and `memory/voice-and-style.md` weekly, using the `/pedros-cowork-playbook:refresh-workspace` skill as a base.
-
-The skill diffs cross-Project memory against recent file activity, connector signals, and Project Memory updates — proposing promotions (rising frequency), demotions (declining or stale), and stale-entry flags. Always proposes; never auto-applies. The skill also seeds Project Memory in the current Cowork Project if it's empty — combining initial seeding and ongoing hygiene in one operation.
-
-Run manually when you sense drift, or as a weekly scheduled task.
-
-### 2.4 What Claude does automatically
-
-- Loads all instructions (Personal Preferences, Cowork Instructions, workspace `CLAUDE.md`, Project Instructions) and Project Memory at the start of every session.
-- Updates Project Memories periodically automatically. *(For mechanics, see Appendix B.)*
-
-You don't need to do anything for these.
-
-## 3. Optional Modules
-
-These extend the playbook with capabilities that aren't required for the core system. Each lives in its own file; install only what you need.
-
-### 3.1 Task system
-
-A markdown-based task tracker (`TASKS.md`) at the workspace root with project-coded entries (e.g., `BO3`, `MC1`), status sections (Backlog / Up Next / In Progress / Waiting On / Done), and a Friday archive cadence to `DONE-LOG.md`.
-
-Details: `modules/task-system.md`.
-
-### 3.2 Daily briefing
-
-A scheduled task that runs every weekday morning, pulls from Calendar, Email, and `TASKS.md`, and produces a prioritized briefing — meetings, action items, waiting-on items, and the one thing that matters most.
-
-Details: `modules/daily-briefing.md`.
-
-### 3.3 Newsletter digest
-
-Scheduled tasks that summarize inbound streams — newsletters, specific Slack channels, RSS feeds. Keeps you current without drowning in inputs.
-
-Details: `modules/newsletter-digest.md`.
-
-## 4. vs. Anthropic's productivity plugin
-
-Anthropic's [productivity plugin](https://github.com/anthropics/knowledge-work-plugins/tree/main/productivity) is the closest thing to a default operating system for Cowork. This playbook has a similar goal and addresses critical inherent issues:
-
-1. **One working directory.** Assumes one `CLAUDE.md` and one `memory/`. If you have multiple projects, you choose between bloating one memory file or splitting context across files that can't see each other.
-
-2. **No Project Memory awareness.** Predates Anthropic's per-Cowork-Project autonomous memory layer; doesn't integrate with it.
-
-3. **Forces features you may not want.** A basic `TASKS.md` and a `dashboard.html` come bundled. No way to install just the memory pattern without the rest.
-
-4. **No automation.** Hygiene is manual via `/update`. No scheduled refresh; the user has to remember.
-
-5. **Hard to extend.** Conventions are baked in (CLAUDE.md format, `memory/` structure, bundled skills). Adding to or replacing what's there means working against the plugin rather than building on top.
-
-What this playbook does:
-
-1. **Cross-Project workspace pattern** (§ 2). Workspace folder holds shared context; each Cowork Project has its own folder and its own Project Memory. Memory layers stack rather than compete.
-
-2. **Project Memory integrated as a third memory layer.** Per-Cowork-Project autonomous memory + user-curated cross-Project memory, each with its own niche.
-
-3. **Modular optional features.** Tasks, daily briefing, newsletter digest — each in its own module. Install only what you need.
-
-4. **Scheduled hygiene.** The Workspace Hygiene task runs weekly; same logic available manually via `/pedros-cowork-playbook:refresh-workspace`.
-
-5. **Built to extend.** Goal-oriented skills, separate reference files, explicit conventions. Customize or add without fighting the plugin.
-
-**Recommendation.** Use this playbook, not the productivity plugin — at least not in its current version (1.2.0, March 2026). 
-
-## 5. Known Issue: Cowork Instructions Revert Bug
-
-**Symptom:** Cowork Instructions in Settings → Cowork can silently revert to a stale version when a prior session writes to the underlying config file with an outdated in-memory snapshot.
-
-**Tracked in:** GitHub issues [#40175](https://github.com/anthropics/claude-code/issues/40175) and [#40731](https://github.com/anthropics/claude-code/issues/40731).
-
-**Workaround:** pin one long-running session that holds your Cowork Instructions in context and treat it as the source of truth. When Instructions revert, restore from that session.
-
-Anthropic is aware. Watch the issues for a fix.
-
-## 6. Security and threat model
-
-Connectors give Claude a wide read perimeter. The same surface that makes the system useful also exposes it to whatever an adversary can plant in those streams. This section surfaces the concern; it doesn't claim authority.
+Connectors give Claude a wide read perimeter. The same surface that makes the system useful exposes it to whatever an adversary can plant in those streams. This section surfaces the concern; it doesn't claim authority.
 
 *I'm not a security expert. For authoritative guidance, see the [OWASP Top 10 for LLM Applications](https://owasp.org/www-project-top-10-for-large-language-model-applications/) and Anthropic's [responsible use guidance](https://docs.claude.com/en/docs/test-and-evaluate/strengthen-guardrails/reduce-prompt-injection-attacks). For Cowork-specific data handling, check Anthropic's terms before connecting regulated data.*
 
-### 6.1 Threats (summary)
+### 4.1 Threats
 
-Three risks worth knowing about. Specifics evolve; treat the framing below as orientation, not assessment.
+1. **Indirect prompt injection** through email, chat, calendar, or document content Claude ingests. Highest-likelihood threat as of April 2026.
+2. **Sensitive data exposure.** Anything Claude reads goes through Anthropic's models. Verify alignment with your data-handling obligations before connecting regulated sources.
+3. **Audit gap.** Cowork sessions may not appear in standard enterprise audit trails. Verify before adopting at scale.
 
-1. **Indirect prompt injection** through email, chat, calendar, or document content that Claude ingests. Highest-likelihood threat as of April 2026.
-
-2. **Sensitive data exposure** — anything Claude reads goes through Anthropic's models. Verify alignment with your data-handling obligations before connecting regulated sources.
-
-3. **Audit gap** — Cowork sessions may not appear in standard enterprise audit trails. Verify before adopting at scale.
-
-### 6.2 Do-not-connect list
+### 4.2 Do-not-connect
 
 Folders to never attach to a Cowork Project:
 
@@ -283,30 +175,44 @@ Folders to never attach to a Cowork Project:
 
 Connectors to scope narrowly or skip entirely:
 
-- Email accounts that receive sensitive third-party content (legal, medical, HR communications)
+- Email accounts that receive sensitive third-party content (legal, medical, HR)
 - Chat workspaces with vendor-confidential discussions
 - Drives containing customer data subject to processing agreements
 
-### 6.3 Practices that reduce risk
+### 4.3 Practices that reduce risk
 
 - **Per-action approval for external writes.** Never grant Claude blanket write permission to external connectors. Approve each send, post, schedule individually.
 - **Audit scheduled tasks.** A daily briefing that pulls from email reads every email each morning. Verify nothing in your inbox is meant to stay confidential.
 - **Don't take "read everywhere" literally** if you handle regulated data. Broad ≠ all.
-- **Treat Project Memory's PII rules as advisory, not enforced.** The system-prompt rules ask Claude not to save sensitive PII; there's no server-side filter. The model's judgment is the only safeguard.
+- **Treat Project Memory's PII rules as advisory.** The system-prompt rules ask Claude not to save sensitive PII; there's no server-side filter. The model's judgment is the only safeguard.
 
-### 6.4 Open issues to watch
+This playbook does not solve security — it surfaces the surface. Pair adoption with your organization's data-handling policies.
 
-- Indirect prompt injection mitigations (Anthropic is actively working on this; assume it's not solved)
-- Audit log coverage for Cowork
-- Per-connector scope controls (UI may improve)
+## 5. vs. Anthropic's productivity plugin
 
-This playbook does not solve security — it surfaces the surface. Pair adoption with your organization's existing data-handling policies.
+Anthropic's [productivity plugin](https://github.com/anthropics/knowledge-work-plugins/tree/main/productivity) is the closest thing to a default operating layer for Cowork. This system has a similar goal but addresses critical inherent issues:
 
-## 7. Appendix A: Templates
+1. **One working directory.** The productivity plugin assumes one `CLAUDE.md` and one `memory/`. Multiple projects either bloat one memory file or split context across files that can't see each other.
+2. **No Project Memory awareness.** Predates Anthropic's per-Cowork-Project autonomous memory layer; doesn't integrate with it.
+3. **Forces features you may not want.** A `TASKS.md` and a `dashboard.html` come bundled. No way to install just the memory pattern without the rest.
+4. **No automation.** Hygiene is manual via `/update`. No scheduled refresh.
+5. **Hard to extend.** Conventions are baked in. Adding to or replacing what's there means working against the plugin rather than building on top.
+
+This playbook:
+
+1. **Cross-Project workspace pattern** (§ 2). Workspace folder holds shared context; each Cowork Project has its own folder and its own Project Memory. Memory layers stack rather than compete.
+2. **Project Memory integrated as a third memory layer.**
+3. **Modular optional features** (Tier IV). Install only what you need.
+4. **Scheduled hygiene.** `/refresh-workspace` runs weekly; same logic available manually.
+5. **Built to extend.** Goal-oriented skills, separate reference files, explicit conventions.
+
+**Recommendation.** Use this system, not the productivity plugin — at least not in its current version (1.2.0, March 2026).
+
+## Appendix A — Templates
 
 Per-channel templates and examples. Copy-paste-adapt.
 
-**These are real working examples**, evolved through months of use — not theoretical placeholders. The patterns they encode (close-the-gap research, goal-oriented prompts, don't-reinvent leverage) are named in § 2.2.2 and inform the design of the skills throughout this playbook. Adapt rather than fill in blanks.
+These are real working examples, evolved through months of use — not theoretical placeholders. Adapt rather than fill in blanks.
 
 ### A.1 Personal Preferences
 
@@ -348,6 +254,8 @@ Per-channel templates and examples. Copy-paste-adapt.
 
 ### A.2 Cowork Instructions
 
+Two parts: operating posture and file conventions.
+
 ```
 # Claude in Cowork
 
@@ -356,7 +264,7 @@ Per-channel templates and examples. Copy-paste-adapt.
 3. Make every output tailored, researched, and grounded in current best practice.
 4. When drafting prompts for other agents, be goal-oriented, not prescriptive. State the outcome; let the agent figure out tooling and sequencing.
 5. Use Claude Cowork's features aggressively — Skills, Plugins, scheduled tasks, connectors. Don't reinvent what a skill already handles.
-6. Never edit CLAUDE.md files without explicit confirmation from Pedro of the exact wording.
+6. Never edit CLAUDE.md files without explicit confirmation from me of the exact wording.
 7. At the end of substantive sessions, suggest updates to context files (CLAUDE.md, memory/, reference/) if anything changed.
 
 ---
@@ -381,61 +289,41 @@ Ignore files with `status: superseded` — treat them as archived, do not refere
 
 ### Folder Structure
 
-`/Users/pedro/claude-workspace/` is the workspace root. It holds:
+`/Users/[you]/claude-workspace/` is the workspace root. It holds:
 
-- A `CLAUDE.md` file — cross-Project hot cache (people, projects, terms).
-- A `memory/` folder — cross-Project full storage (`glossary.md`, `voice-and-style.md`).
-- One subfolder per project (e.g., `gtm-pedro/`, `MIC-global-application/`, `life-of-meaning/`). Each project subfolder uses standard sub-folders (`reference/`, `working/`, `deliverables/`) as needed. Project mission and persona live in the matching Cowork Project's Project Instructions (UI), not in CLAUDE.md files inside the project folder.
-
-### Standard Sub-Folders
-
-Projects use these folder names consistently:
+- `CLAUDE.md` — cross-Project hot cache (people, projects, terms).
+- `memory/` — cross-Project full storage (`glossary.md`, `voice-and-style.md`).
+- One subfolder per project (e.g., `gtm-pedro/`, `MIC-global-application/`, `life-of-meaning/`). Each project subfolder uses standard sub-folders as needed.
 
 | Folder | Contents | Lifecycle |
 |--------|----------|-----------|
 | `reference/` | Stable context: positioning, principles, personas, guides. | Changes when strategy changes. |
 | `working/` | Drafts, scratch, session handoffs, research notes. | Purged periodically. Read YAML frontmatter to decide relevance. |
 | `deliverables/` | Finished outputs: published content, final docs, shipped assets. | Permanent unless superseded. |
+| `archived/` | Stale items worth keeping out of sight. | Optional. |
 
-Not every project needs all three. Use what fits.
+When a folder gets crowded, suggest moving stale items to `archived/` before purging. Project mission and persona live in the matching Cowork Project's Project Instructions (UI), not in `CLAUDE.md` files inside the project folder (those stay empty).
+
+### Naming
+
+Lowercase kebab-case. Date stamps where relevant: `playbook-2026-04-28.md`. Be specific enough to identify the file without opening it.
 
 ---
 
 ## Me
 
-Pedro J. Cabassa — Strategist and operator. 20+ years across insurance brokerage, healthcare tech, and venture building. Bilingual (English/Spanish), NYC-based, Guatemalan roots. Currently independent — building AI products, consulting, and interviewing selectively.
-
-**Experience:** operations leadership (strategy → execution), early-stage venture building, AI-first product and tooling (last ~5 years), cross-functional operating between business and technical teams.
-
-**Strengths:** systems thinking, translating between operator and engineer languages, building from zero, shipping AI-augmented workflows, pattern recognition across industries.
-
-**Gaps I'm actively closing:** deeper hands-on with modern AI dev stacks (agents, RAG, evals, MCP); sales/GTM reps at scale.
+[Your name and one paragraph: role, focus, key context.]
 
 ## Further Context
 
 When the inline context above isn't enough, pull from these files:
 
-→ Voice and tone: `/Users/pedro/claude-workspace/memory/voice-and-style.md`
-→ Glossary (terms, nicknames, codenames): `/Users/pedro/claude-workspace/memory/glossary.md`
-
-## Task System
-
-Tasks live in `/Users/pedro/claude-workspace/TASKS.md`. Pedro references tasks by code (e.g., `BO3`, `MC1`) — project code → name mapping is in `/Users/pedro/claude-workspace/memory/projects/index.md`.
-
-Conventions:
-- Active codes never recycle. Use the lowest number not currently in use for that project prefix.
-- Sections: Backlog, Up Next, In Progress, Waiting On, Done.
-- Waiting On tasks include `// waiting: [person]` suffix.
-- Due dates use `// [date]` suffix when applicable.
-- Completed tasks include `// done: [date]` suffix.
-- Include one link per task when possible: `→ [link]` at end of line.
-- Completed tasks archive to `/Users/pedro/claude-workspace/DONE-LOG.md` via the weekly task-cleanup scheduled task (Fridays).
+→ Voice and tone: `~/claude-workspace/memory/voice-and-style.md`
+→ Glossary (terms, nicknames, codenames): `~/claude-workspace/memory/glossary.md`
 
 ## Emails
 
-- Personal: pedrocabassa@gmail.com
-- Wellthy: pedro.cabassa.c@wellthy.com
-- Co-Created: pedro@co-created.com
+[Your email addresses, if relevant.]
 ```
 
 ### A.3 Project Instructions (gtm-pedro example)
@@ -473,7 +361,7 @@ last_updated: YYYY-MM-DD
 
 ## My Organization
 
-[Your company or primary organization. Include: name, your role there, brief context — what the company does, headcount, key tools and systems, internal language. Skip or simplify if you're independent.]
+[Your company or primary organization. Include: name, your role there, brief context. Skip or simplify if you're independent.]
 
 ## My Team
 
@@ -482,27 +370,22 @@ The people you work with directly — manager, direct reports, frequent collabor
 | Who | Role |
 |-----|------|
 | **[Nickname]** | [Full name, role on team] |
-| ... | ... |
 
 ## People
 
-Top ~15 contacts beyond your immediate team. Short descriptors — Project Memory carries deeper context per Cowork Project. Full glossary: `memory/glossary.md`.
+Top ~15 contacts beyond your immediate team. Short descriptors. Full glossary: `memory/glossary.md`.
 
 | Who | Role |
 |-----|------|
 | **[Nickname]** | [Full name, role, company, one-line context] |
-| ... | ... |
 
 ## Projects
 
-Active project code → name → folder → status → description. Short descriptors — each Cowork Project's Project Memory carries the rest.
+Active project code → name → folder → status → description. Short descriptors.
 
 | Code | Name | Folder | Status | Description |
 |------|------|--------|--------|-------------|
-| **MC** | MIC Global | [./MIC-global-application/](file:///Users/pedro/claude-workspace/MIC-global-application/) | Pitch phase | AI/strategic pitch and program management. |
-| **GT** | GTM Pedro | [./gtm-pedro/](file:///Users/pedro/claude-workspace/gtm-pedro/) | Active | Personal brand, positioning, outbound pipeline. |
-| **OA** | Ops Advisory | [./ops-advisory/](file:///Users/pedro/claude-workspace/ops-advisory/) | Active | Advisory on operations, org design, AI-enabled operating models. |
-| **LF** | Life of Meaning | [./life-of-meaning/](file:///Users/pedro/claude-workspace/life-of-meaning/) | Active | Career, health, relationships, meaning. |
+| **GT** | GTM Pedro | [./gtm-pedro/](file:///Users/[you]/claude-workspace/gtm-pedro/) | Active | Personal brand, positioning, outbound pipeline. |
 
 ## Terms
 
@@ -510,11 +393,10 @@ Top ~15 cross-project terms. Full glossary: `memory/glossary.md`.
 
 | Term | Meaning |
 |------|---------|
-| **[Term]** | [Definition] |
-| ... | ... |
+| **ICP** | Ideal Customer Profile. |
 ```
 
-### A.5 Workspace memory/ structure
+### A.5 memory/ structure
 
 Two files. That's it.
 
@@ -524,173 +406,65 @@ memory/
 └── voice-and-style.md   # how you write and speak
 ```
 
-People and project indexes live in workspace `CLAUDE.md` (short descriptors). Per-project rich detail lives in each Cowork Project's Project Memory. The `memory/` folder holds only what's genuinely cross-cutting *and* worth user-curating: shared language and shared voice.
+People and project indexes live in workspace `CLAUDE.md` (short descriptors). Per-project rich detail lives in each project's folder. The workspace `memory/` holds only what's genuinely cross-cutting AND worth manually curating.
 
-## 8. Appendix B: Project Memory mechanics
-
-*Anthropic's name for this layer is "Auto Memory"; this playbook calls it "Project Memory" because that's what it actually is.*
+## Appendix B — Project Memory mechanics
 
 For the curious. Anthropic actively iterates on this layer; details below are accurate as of 2026-04-28.
 
-### B.1 Storage
+### Storage
 
 Per Cowork Project, hard isolated. One "space" UUID per Cowork Project. Path: `~/Library/Application Support/Claude/local-agent-mode-sessions/<session>/spaces/<space-uuid>/memory/`. Cross-Project leakage is impossible — verified by direct test.
 
-### B.2 The four types
+### The four types
 
 - `user_*` — durable user facts (role, preferences, knowledge)
 - `feedback_*` — corrections + validations
 - `project_*` — durable project facts (decisions, deadlines, motivations)
 - `reference_*` — pointers to external systems
 
-### B.3 File format
+### File format
 
 Frontmatter: `name`, `description`, `type`. Body for `feedback`/`project`: rule, then `**Why:**` line, then `**How to apply:**` line. Other types use freer-form prose.
 
-### B.4 Index
+### Index
 
 `MEMORY.md` is a bare markdown index — one bullet per entry: `- [Title](file.md) — one-line hook`. Anthropic-stated cap: 200 lines / 25KB. Lines beyond are silently truncated at session start.
 
-### B.5 Write triggers
+### Write triggers
 
 Model-driven, not tool-call-driven. Claude uses standard Write/Edit tools. Triggers are governed by a system-prompt section that defines what to save and what to skip (sensitive PII, ephemeral state, code patterns, anything derivable from current files).
 
-### B.6 Stale-warning runtime
+### Stale-warning runtime
 
-Every read of a typed memory file is annotated with the file's age — *"This memory is N days old. Memories are point-in-time observations, not live state — verify against current code before asserting as fact."* Built into the runtime, not just system-prompt rules.
+Every read of a typed memory file is annotated with the file's age — *"This memory is N days old. Memories are point-in-time observations, not live state — verify against current code before asserting as fact."*
 
-### B.7 Lifecycle
+### Lifecycle
 
-Cleanup via Anthropic's `/consolidate-memory` skill (manual). Three phases: take stock, consolidate, tidy index. No auto-trigger documented as of writing.
+Cleanup via Anthropic's `/consolidate-memory` skill (manual). Three phases: take stock, consolidate, tidy index. No auto-trigger.
 
-### B.8 Sources
+## References
 
-Verbatim system-prompt fragments captured in `system-prompt-memory-references-2026-04-28.md`. Anthropic's docs at code.claude.com/docs/en/memory.
+### Anthropic official
 
-## 9. Appendix C: Worked examples
-
-### C.1 gtm-pedro asks "what's the status of the pipeline?"
-
-You're in your gtm-pedro Cowork Project. You ask Claude: "What's the status of the pipeline?"
-
-Claude has loaded:
-
-1. **Personal Preferences** — direct, numbered, push back where appropriate.
-2. **Cowork Instructions** — operate as Pedro's chief of staff; cite sources; write inside the workspace only.
-3. **Project Instructions** — operate as Pedro's Chief GTM Executive; lead with researched recommendations.
-4. **Workspace `CLAUDE.md`** — top 15 people across all projects; project codes including `GT` for gtm-pedro.
-5. **Project Memory** for the gtm-pedro Cowork Project — `MEMORY.md` with entries about Pedro's GTM delegation expectations and recent pipeline state.
-
-The auto-loaded context is enough for Claude to know the question is scoped to gtm-pedro (Project Instructions named the project), recall recent pipeline conversations (Project Memory), and answer in Pedro's preferred format (Personal Preferences). If a pipeline contact like "Sam at Acme" became recurring, the next refresh-workspace pass would propose promoting them into the workspace `CLAUDE.md` people table.
-
-### C.2 A new person "Sam" starts appearing
-
-Sam shows up in Slack threads three times this week. Your Workspace Hygiene scheduled task runs Sunday and notices: "Sam mentioned 3 times across two channels; not in any memory or hot cache."
-
-The task proposes:
-
-1. Add Sam to `memory/people/sam-{lastname}.md` with what's known from chat (role, team, when first mentioned).
-2. If Sam continues being mentioned next week, propose promotion to the workspace `CLAUDE.md` people table.
-
-You approve or skip. If approved, the next Cowork session in any Project sees Sam in workspace `CLAUDE.md` the moment frequency justifies it.
-
-The framework handles people moving in and out of relevance without you needing to manually maintain a contact list.
-
-## 10. Appendix D: File and naming conventions
-
-### D.1 Naming
-
-- Lowercase kebab-case: `pedros-cowork-playbook.md`, not `Pedros_Cowork_Playbook.md`.
-- Date stamps when relevant (drafts, snapshots): `playbook-2026-04-28.md`.
-- Be specific enough to identify the file without opening it.
-
-### D.2 YAML frontmatter
-
-On working files (drafts, references, snapshots):
-
-```yaml
----
-title:
-purpose:
-audience:
-status: current | draft | superseded
-created: YYYY-MM-DD
-last_updated: YYYY-MM-DD
-superseded_by:  # only if status is superseded
----
-```
-
-Treat files with `status: superseded` as archived; don't reference their content.
-
-### D.3 Folder structure
-
-```
-~/claude-workspace/             # workspace root
-├── CLAUDE.md                   # workspace hot cache (§ 2.3.1)
-├── memory/                     # workspace full storage (§ 2.3.2)
-├── TASKS.md                    # optional — see § 5.1
-├── DONE-LOG.md                 # optional — see § 5.1
-├── project-1/                  # project folder, must be direct subfolder
-│   ├── reference/              # stable strategic context
-│   ├── working/                # drafts, scratch
-│   └── deliverables/           # finished outputs
-└── project-2/
-    └── ...
-```
-
-### D.4 memory/ contents
-
-```
-memory/
-├── glossary.md          # all terms, nicknames, codenames
-└── voice-and-style.md   # how you write and speak
-```
-
-Only these two files. Per-project content lives in Project Memory; people/project indexes live in workspace `CLAUDE.md`. See § 2.3.2.
-
-## 11. References
-
-### 11.1 Anthropic official sources
-
-**Cowork product**
-- [Claude Cowork — Anthropic product page](https://claude.com/product/cowork)
-- [Get started with Claude Cowork](https://support.claude.com/en/articles/13345190-get-started-with-claude-cowork)
+- [Claude Cowork — product page](https://claude.com/product/cowork)
+- [Get started with Cowork](https://support.claude.com/en/articles/13345190-get-started-with-claude-cowork)
 - [Organize tasks with Projects in Cowork](https://support.claude.com/en/articles/14116274-organize-your-tasks-with-projects-in-claude-cowork)
+- [Memory docs (CLAUDE.md, auto-memory)](https://code.claude.com/docs/en/memory)
+- [knowledge-work-plugins repo](https://github.com/anthropics/knowledge-work-plugins)
+- [Memory tool API docs](https://docs.claude.com/en/docs/agents-and-tools/tool-use/memory-tool)
 
-**Memory**
-- [Claude Code memory docs (CLAUDE.md, auto-memory)](https://code.claude.com/docs/en/memory)
-- [Use Claude's chat search and memory](https://support.claude.com/en/articles/11817273-use-claude-s-chat-search-and-memory-to-build-on-previous-context)
-- [Anthropic — memory for teams launch](https://www.anthropic.com/news/memory)
+### Bug tracking
 
-**Plugins and skills**
-- [knowledge-work-plugins repo](https://github.com/anthropics/knowledge-work-plugins) — open source plugins; productivity plugin lives here.
-- [productivity plugin folder](https://github.com/anthropics/knowledge-work-plugins/tree/main/productivity)
-- [Memory tool API docs](https://docs.claude.com/en/docs/agents-and-tools/tool-use/memory-tool) — the underlying primitive Anthropic uses for Project Memory.
+- [#40175 — Cowork Instructions revert](https://github.com/anthropics/claude-code/issues/40175)
+- [#40731 — Cowork Instructions revert (related)](https://github.com/anthropics/claude-code/issues/40731)
+- [#45076 — Project metadata silent disappearance](https://github.com/anthropics/claude-code/issues/45076)
+- [#29434 — sensitive content in memory cannot be redacted](https://github.com/anthropics/claude-code/issues/29434)
 
-**Bug tracking**
-- [Issue #40175 — Cowork Instructions revert](https://github.com/anthropics/claude-code/issues/40175)
-- [Issue #40731 — Cowork Instructions revert (related)](https://github.com/anthropics/claude-code/issues/40731)
-- [Issue #45076 — Project metadata silent disappearance](https://github.com/anthropics/claude-code/issues/45076)
-- [Issue #29434 — sensitive content in memory cannot be redacted](https://github.com/anthropics/claude-code/issues/29434)
+### Community
 
-### 11.2 Community sources (flagged as community)
-
-Project Memory mechanics (Anthropic's term: "Auto Memory") — Anthropic publishes high-level docs but the deep mechanics are reverse-engineered. Treat the items below as best-current-understanding, verify before depending on specifics.
+Project Memory mechanics — Anthropic publishes high-level docs but the deep mechanics are reverse-engineered. Treat the items below as best-current-understanding.
 
 - [claudefa.st — Auto Memory mechanics](https://claudefa.st/blog/guide/mechanics/auto-memory)
 - [claudefa.st — Auto Dream consolidation](https://claudefa.st/blog/guide/mechanics/auto-dream)
 - [Milvus blog — Claude Code memory and memsearch](https://milvus.io/blog/claude-code-memory-memsearch.md)
-- [DEV — Claude Code's memory: 4 layers of complexity](https://dev.to/chen_zhang_bac430bc7f6b95/claude-codes-memory-4-layers-of-complexity-still-just-grep-and-a-200-line-cap-2kn9)
-
-Independent Cowork guides (consulted during research; none treats the full instruction-channel set as a partitioned system):
-
-- Ruben Hassid — uses Global Instructions as a dispatcher pointing to ABOUT ME / TEMPLATES / PROJECTS folders.
-- Alex Banks — layers Project Instructions over Global + Context files.
-- Jeff Su — treats channels as separate features.
-- Karo Zieminski — focuses on plugin/skill/sub-agent tactics.
-
-### 11.3 Internal source materials
-
-- `working/system-prompt-memory-references-2026-04-28.md` — verbatim fragments of Claude's system prompt governing Project Memory; primary source for § 2.4 and Appendix B.
-- `working/pedros-cowork-backlog-and-research-2026-04-28.md` — research notes, design decisions, open questions that fed v4.
-- `working/early-feedback-on-playbook-v4-2026-04-28.md` — external review captured for triage.
